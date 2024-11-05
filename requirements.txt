@@ -2,3 +2,5 @@ opencv-python
 deepface
 tf_keras
 django
+channels
+daphne
