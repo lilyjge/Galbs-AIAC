@@ -1,0 +1,15 @@
+{
+    "to_server":
+    {
+        "command": "ping | send_input",
+        "image_data": "base64",
+        "audio_data": "base64?"
+    },
+    "to_client":
+    {
+        "command": "ping | send_output",
+        "audio_data": "base64?",
+        "motor_data": 60,
+        "led_data": [200, 100, 50]
+    }
+}
