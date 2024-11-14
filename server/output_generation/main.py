@@ -79,7 +79,7 @@ def tts(voice_id, text, output_file):
 
     response = requests.post(f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream", headers=headers, json=data, stream=True)
 
-    with open(f"output-generation/audio-output-files/{output_file}", "wb") as file:
+    with open(f"output_generation/audio-output-files/{output_file}", "wb") as file:
         for chunk in response.iter_content(chunk_size=1024):
             file.write(chunk)
 
