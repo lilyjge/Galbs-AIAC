@@ -16,6 +16,9 @@ class Speaker:
         self.audio = pyaudio.PyAudio()
         self.stream = self.audio.open(format=format, channels=channels, rate=rate, output=True)
 
+    async def play_audio(self, data):
+        self.stream.write(data)
+
     async def run(self, websocket_uri):
         # Continously receives and outputs data from server by websocket.
         # websocket_uri: the uri of the websocket to connect with and receive audio from

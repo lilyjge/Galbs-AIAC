@@ -4,6 +4,7 @@ import webrtcvad
 import pyaudio
 import asyncio
 import websockets
+import base64
 
 class Microphone:
     # Microphone class.
@@ -29,6 +30,10 @@ class Microphone:
         self.vad = webrtcvad.Vad()
         self.vad.set_mode(3)
 
+        self.frames = []
+        self.recording = False
+        self.silence = 0
+
     def is_speech(self, frame, sample_rate):
         # Detects if there is sound in chunk of audio.
         # frame: chunk of audio
@@ -36,33 +41,35 @@ class Microphone:
         # Returns True if there is sound and False if it is silent.
         return self.vad.is_speech(frame, sample_rate)
     
-    async def record_audio(self):
+    def send_audio2(self):
+        f = b''.join(self.frames)
+        encoded = base64.b64encode(f).decode()
+        self.frames = []
+        self.recording = False
+        self.silence = 0
+        return encoded
+    
+    async def record_audio(self, initial):
         # Processes audio input and places audio chunks with sound into queue to be sent.
-        frames = []
-        recording = False
-        print("listening")
-        try:
-            while True:
-                frame = self.stream.read(self.chunk)
-                if self.is_speech(frame, self.rate):
-                    if not recording:
-                        print("started")
-                        recording = True
-                    frames.append(frame)
-                else:
-                    if recording:
-                        print("no more recording")
-                        await self.queue.put(frames)
-                        frames = []
-                        recording = False
-                    else:
-                        await asyncio.sleep(0.01)
-        except KeyboardInterrupt:
-            print("ended")
-            self.stream.stop_stream()
-            self.stream.close()
-            self.audio.terminate()
-            pass
+        # print("listening")
+        while True:
+            frame = self.stream.read(self.chunk)
+            if self.is_speech(frame, self.rate):
+                if not self.recording:
+                    print("started")
+                    self.recording = True
+                self.frames.append(frame)
+            else:
+                self.index += 1
+                if self.recording and self.index > 10:
+                    print("no more recording")
+                    self.frames.insert(0, initial)
+                    f = b''.join(self.frames)
+                    encoded = base64.b64encode(f).decode()
+                    self.frames = []
+                    self.recording = False
+                    self.index = 0
+                    return encoded
 
     async def send_audio(self, websocket):
         # Sends recorded audio chunks by websocket. 

@@ -18,18 +18,18 @@ class Camera:
         self.cam_port = cam_port
         self.cam = cv2.VideoCapture(self.cam_port)
 
-    async def send_image(img, websocket):
+    def send_image(self):
         # Encodes and sends image by websocket.c
         
         # img: captured image to be sent (numpy array)
         # websocket: websocket to send images through
-
-        result, buffer = cv2.imencode('.jpg', img)
+        result, image = self.cam.read()
+        result, buffer = cv2.imencode('.jpg', image)
         s = base64.b64encode(buffer).decode()
-        load = {'image': s}
-        data = json.dumps(load)
+        # load = {'image': s}
+        # data = json.dumps(load)
         print("sending")
-        await websocket.send(data)
+        return s
 
     async def run(self, websocket_uri):
         # Every second, check if there was motion and takes and sends picture if there is.
