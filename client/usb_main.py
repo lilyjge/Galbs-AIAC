@@ -18,8 +18,8 @@ async def take_input(queue, mic, cam):
             mic.frames.append(frame)
         else:
             mic.silence += 1
-            if mic.recording and mic.silence > 10:
-                audio_data = mic.send_audio2()
+            if mic.recording and mic.silence > 100:
+                audio_data = mic.send_audio()
                 image_data = cam.send_image()
                 send_data = {
                     "command": "send_input",
@@ -28,6 +28,8 @@ async def take_input(queue, mic, cam):
                 }
                 input = json.dumps(send_data)
                 await queue.put(input)
+            elif mic.recording and mic.silence < 50:
+                mic.frames.append(frame)
             elif not mic.recording:
                 await asyncio.sleep(0)
 
@@ -35,9 +37,12 @@ async def output_audio(websocket, spk):
     while True:
         received_data = await websocket.recv()
         load = json.loads(received_data)
-        audio_output = load["audio_data"]
-        decoded_audio = base64.b64decode(audio_output)
-        await spk.play_audio(decoded_audio)
+        if load["command"] == "send_output":
+            audio_output = load["audio_data"]
+            decoded_audio = base64.b64decode(audio_output)
+            await spk.play_audio(decoded_audio)
+        elif oad["command"] == "ping":
+            await websocket.send("received ping")
 
 async def send_to_server(queue, websocket):
     while True:
@@ -58,4 +63,4 @@ async def main(websocket_uri):
         output_task = asyncio.create_task(output_audio(websocket, spk))
         await asyncio.gather(input_task, send_task, output_task)
           
-asyncio.run(main("ws://localhost:8765"))
+asyncio.run(main("ws://192.168.40.6:8765"))

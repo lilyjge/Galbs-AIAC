@@ -5,6 +5,7 @@ import pyaudio
 import asyncio
 import websockets
 import base64
+import wave
 
 class Microphone:
     # Microphone class.
@@ -40,38 +41,50 @@ class Microphone:
         # sample_rate: number of audio frames per second
         # Returns True if there is sound and False if it is silent.
         return self.vad.is_speech(frame, sample_rate)
-    
-    def send_audio(self):
+
+    def send_audio2(self):
         f = b''.join(self.frames)
         encoded = base64.b64encode(f).decode()
         self.frames = []
         self.recording = False
         self.silence = 0
         return encoded
-    
-    async def record_audio(self, initial):
+
+    def record_audio(self):
         # Processes audio input and places audio chunks with sound into queue to be sent.
         # print("listening")
+        for i in range(self.audio.get_device_count()):
+            info = self.audio.get_device_info_by_index(i)
+            print(f"device {i}: {info['name']}, sample rate: {info['defaultSampleRate']} hz")
         while True:
             frame = self.stream.read(self.chunk)
             if self.is_speech(frame, self.rate):
+            #if index < 250:
                 if not self.recording:
                     print("started")
                     self.recording = True
                 self.frames.append(frame)
+                self.silence = 0
             else:
-                self.index += 1
-                if self.recording and self.index > 10:
+                self.silence += 1
+                if self.recording and self.silence > 100:
                     print("no more recording")
-                    self.frames.insert(0, initial)
                     f = b''.join(self.frames)
-                    encoded = base64.b64encode(f).decode()
+                    
+                    wf = wave.open("output.wav", "wb")
+                    wf.setnchannels(self.channels)
+                    wf.setsampwidth(self.audio.get_sample_size(self.format))
+                    wf.setframerate(self.rate)
+                    wf.writeframes(f)
+                    wf.close()
+                    
                     self.frames = []
                     self.recording = False
-                    self.index = 0
-                    return encoded
+                    self.silence = 0
+                elif self.recording and self.silence < 50:
+                    self.frames.append(frame)
 
-    async def direct_send(self, websocket):
+    async def send_audio(self, websocket):
         # Sends recorded audio chunks by websocket. 
         # websocket: websocket to send audio through
         while True:
@@ -90,9 +103,15 @@ class Microphone:
             listener_task = asyncio.create_task(self.record_audio())
             sender_task = asyncio.create_task(self.send_audio(websocket))
             await asyncio.gather(listener_task, sender_task)
-    
+
     def close(self):
         # Closes audio stream. 
         self.stream.stop_stream()
         self.stream.close()
         self.audio.terminate()
+
+def main():
+    mic = Microphone()
+    mic.record_audio()
+
+main()
