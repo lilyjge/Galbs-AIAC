@@ -1,11 +1,12 @@
 '''
-TBD
+A script that takes text input (parsed from audio input) and emotions dictionary (parsed from facial input) to generate audio output, motor angle for arm response, and LED light response as RGB.
 '''
 
+from random import randint
 import numpy as np
 from groq import Groq
 from output_generation.API_KEY import GROQ_API_KEY, ELEVENLABS_API_KEY
-from output_generation.BEHAVIOUR import MOTOR, COLOUR
+from output_generation.BEHAVIOUR import ANGLE_SCALE, MOTOR, COLOUR
 import requests
 
 client = Groq(
@@ -46,7 +47,6 @@ def format_emotions(emotions):
 
 # Generates text reponse using openAI API
 def generate_response(input_text, emotions):
-
     response = client.chat.completions.create(
         model="llama3-8b-8192",
         messages=[
@@ -60,7 +60,6 @@ def generate_response(input_text, emotions):
             }
         ]
     )
-
     return response.choices[0].message.content
 
 
@@ -88,7 +87,7 @@ def tts(voice_id, text, output_file):
 def motor_response(emotions):
     if emotions is None:
         return MOTOR["neutral"]
-    return MOTOR[emotions["dominant_emotion"]]
+    return int(ANGLE_SCALE*MOTOR[emotions["dominant_emotion"]][0])
 
 
 # Generate LED lights response
@@ -125,7 +124,4 @@ if __name__ == "__main__":
     # Lights
     print("LIGHTS: ")
     print(lights_response(emotions_input))
-
-
-
 
