@@ -49,27 +49,24 @@ class Microphone:
         self.silence = 0
         return encoded
     
-    async def record_audio(self, initial):
+    async def record_audio(self):
         # Processes audio input and places audio chunks with sound into queue to be sent.
         # print("listening")
         while True:
             frame = self.stream.read(self.chunk)
             if self.is_speech(frame, self.rate):
+                self.silence = 0
                 if not self.recording:
                     print("started")
                     self.recording = True
                 self.frames.append(frame)
             else:
-                self.index += 1
-                if self.recording and self.index > 10:
+                self.silence += 1
+                if self.recording and self.silence > 100:
                     print("no more recording")
-                    self.frames.insert(0, initial)
-                    f = b''.join(self.frames)
-                    encoded = base64.b64encode(f).decode()
-                    self.frames = []
-                    self.recording = False
-                    self.index = 0
-                    return encoded
+                    return self.send_audio()
+                elif self.recording and self.silence < 50:
+                    self.frames.append(frame)
 
     async def direct_send(self, websocket):
         # Sends recorded audio chunks by websocket. 

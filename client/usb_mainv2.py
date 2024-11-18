@@ -6,32 +6,30 @@ import base64
 from modules.camera import camera
 from modules.microphone import microphone
 from modules.speaker import speaker    
+import websockets
+import asyncio
+import json
+import base64
+
+from modules.camera import camera
+from modules.microphone import microphone
+from modules.speaker import speaker    
 
 async def take_input(queue, mic, cam):
     while True:
         frame = mic.stream.read(mic.chunk)
         if mic.is_speech(frame, mic.rate):
-            mic.silence = 0
-            if not mic.recording:
-                print("started")
-                mic.recording = True
-            mic.frames.append(frame)
+            audio_data = await mic.record_audio()
+            image_data = cam.send_image()
+            send_data = {
+                "command": "send_input",
+                "image_data": image_data,
+                "audio_data": audio_data
+            }
+            input = json.dumps(send_data)
+            await queue.put(input)
         else:
-            mic.silence += 1
-            if mic.recording and mic.silence > 100:
-                audio_data = mic.send_audio()
-                image_data = cam.send_image()
-                send_data = {
-                    "command": "send_input",
-                    "image_data": image_data,
-                    "audio_data": audio_data
-                }
-                input = json.dumps(send_data)
-                await queue.put(input)
-            elif mic.recording and mic.silence < 50:
-                mic.frames.append(frame)
-            elif not mic.recording:
-                await asyncio.sleep(0)
+            await asyncio.sleep(0)
 
 async def output_audio(websocket, spk):
     while True:

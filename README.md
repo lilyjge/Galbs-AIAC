@@ -1,6 +1,6 @@
 # se101-unnamed-final
 
-
+If there is an issue with installing pyaudio on Raspberry Pi, try sudo apt-get install python3-pyaudio and in the venv folder, under pyvenv.cfg, set include-system-site-packages to true.
 
 ## Getting started
 
