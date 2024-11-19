@@ -52,7 +52,7 @@ def generate_response(input_text, emotions):
         messages=[
             {
                 "role": "system",
-                "content": "You are a good friend that provides insightful responses. Emotions Detected: " + emotions
+                "content": "You are a good friend that provides insightful and brief (two to three sentences) responses. Emotions Detected: " + emotions
             },
             {
                 "role": "user",
@@ -87,7 +87,7 @@ def tts(voice_id, text, output_file):
 def motor_response(emotions):
     if emotions is None:
         return MOTOR["neutral"]
-    return int(ANGLE_SCALE*MOTOR[emotions["dominant_emotion"]][0])
+    return int(ANGLE_SCALE*MOTOR[emotions["dominant_emotion"]])
 
 
 # Generate LED lights response
