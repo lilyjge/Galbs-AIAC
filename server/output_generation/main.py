@@ -100,7 +100,7 @@ if __name__ == "__main__":
     user_input = input()
     print("EMOTIONS: ")
     emotions_input = {'emotion': {'happy': np.float32(6.2788945e-06), 'disgust': np.float32(1.12710405e-13), 'fear': np.float32(8.1948154e-10), 'angry': np.float32(99.39528), 'sad': np.float32(1.3383974e-06), 'surprise': np.float32(0.00043022225), 'neutral': np.float32(0.60428834)}, 'dominant_emotion': 'angry', 'region': {'x': 1, 'y': 1, 'w': 114, 'h': 114, 'left_eye': None, 'right_eye': None}, 'face_confidence': np.float64(0.94)}
-    print("FILE (___.mp3): ")
+    print("FILE (___.wav): ")
     output = input()
 
     text = detect_audio(user_input)
@@ -111,8 +111,8 @@ if __name__ == "__main__":
 
     # Audio file
     print("AUDIO: ")
-    tts(VOICE_ID, response, f"{output}.mp3")
-    print(f"To {output}.mp3")
+    tts(VOICE_ID, response, f"{output}.wav")
+    print(f"To {output}.wav")
 
     # Motor
     print("MOTOR: ")
