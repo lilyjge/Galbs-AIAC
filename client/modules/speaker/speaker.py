@@ -6,7 +6,7 @@ import websockets
 class Speaker:
     # Speaker class.
 
-    def __init__(self, format=pyaudio.paInt16, channels=1, rate=48000):
+    def __init__(self, format=pyaudio.paInt16, channels=1, rate=44100):
         # Initializes the speaker with specifications.
 
         # format: datatype of audio
@@ -16,7 +16,7 @@ class Speaker:
         self.audio = pyaudio.PyAudio()
         self.stream = self.audio.open(format=format, channels=channels, rate=rate, output=True)
 
-    async def play_audio(self, data):
+    def play_audio(self, data):
         self.stream.write(data)
 
     async def run(self, websocket_uri):

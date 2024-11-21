@@ -10,3 +10,4 @@ pyaudio
 openai
 groq
 requests
+soundfile

@@ -38,7 +38,8 @@ async def output_audio(websocket, spk):
         if load["command"] == "send_output":
             audio_output = load["audio_data"]
             decoded_audio = base64.b64decode(audio_output)
-            await spk.play_audio(decoded_audio)
+            print(decoded_audio)
+            spk.play_audio(decoded_audio)
         elif load["command"] == "ping":
             await websocket.send("received ping")
 
@@ -61,4 +62,4 @@ async def main(websocket_uri):
         output_task = asyncio.create_task(output_audio(websocket, spk))
         await asyncio.gather(input_task, send_task, output_task)
           
-asyncio.run(main("ws://localhost:8765"))
+asyncio.run(main("ws://172.20.10.4:8000/ws/api/"))
