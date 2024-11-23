@@ -5,10 +5,9 @@ A script that takes text input (parsed from audio input) and emotions dictionary
 from random import randint
 import numpy as np
 from groq import Groq
-from API_KEY import GROQ_API_KEY
-from BEHAVIOUR import ANGLE_SCALE, MOTOR, COLOUR
+from output_generation.API_KEY import GROQ_API_KEY, ELEVENLABS_API_KEY
+from output_generation.BEHAVIOUR import ANGLE_SCALE, MOTOR, COLOUR
 import requests
-from API_KEY import ELEVENLABS_API_KEY
 
 client = Groq(
     api_key=GROQ_API_KEY,
@@ -79,18 +78,22 @@ def tts(voice_id, text, output_file):
 
     response = requests.post(f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream", headers=headers, json=data, stream=True)
 
-    with open(f"output_generation/audio_output_files/{output_file}", "wb") as file:
+    with open(f"output_generation/audio-output-files/{output_file}", "wb") as file:
         for chunk in response.iter_content(chunk_size=1024):
             file.write(chunk)
 
 
 # Generate motor control response
 def motor_response(emotions):
+    if emotions is None:
+        return MOTOR["neutral"]
     return int(ANGLE_SCALE*MOTOR[emotions["dominant_emotion"]])
 
 
 # Generate LED lights response
 def lights_response(emotions):
+    if emotions is None:
+        return COLOUR["neutral"]
     return COLOUR[emotions["dominant_emotion"]]
 
 # TESTING
