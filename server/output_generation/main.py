@@ -5,7 +5,7 @@ TBD
 import numpy as np
 from groq import Groq
 from output_generation.API_KEY import GROQ_API_KEY, ELEVENLABS_API_KEY
-from output_generation.BEHAVIOUR import ANGLE_SCALE, MOTOR, COLOUR
+from output_generation.BEHAVIOUR import MOTOR, COLOUR
 import requests
 
 client = Groq(
@@ -86,11 +86,15 @@ def tts(voice_id, text, output_file):
 
 # Generate motor control response
 def motor_response(emotions):
-    return ANGLE_SCALE*MOTOR[emotions["dominant_emotion"]]
+    if emotions is None:
+        return MOTOR["neutral"]
+    return MOTOR[emotions["dominant_emotion"]]
 
 
 # Generate LED lights response
 def lights_response(emotions):
+    if emotions is None:
+        return COLOUR["neutral"]
     return COLOUR[emotions["dominant_emotion"]]
 
 # TESTING
