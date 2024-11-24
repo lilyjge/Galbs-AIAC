@@ -9,7 +9,7 @@ import time
 # from modules.speaker import speaker
 from modules.stepper_motor import stepper_motor
 from modules.rgb_led import rgb_led
-from modules import color
+from modules.rgb_led import color
 
 from modules.stepper_motor import simultaneous
 
