@@ -74,7 +74,7 @@ async def process_received_data(websocket: websockets.WebSocketClientProtocol) -
             if "audio_data" in load:
                 audio_output = load["audio_data"]
                 decoded_audio = base64.b64decode(audio_output)
-                spk.play_audio(decoded_audio)
+                await spk.play_audio(decoded_audio)
             if "motor_data" in load:
                 await handle_stepper_motor(load)
             if "led_data" in load:
