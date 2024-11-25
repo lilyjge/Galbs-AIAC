@@ -1,6 +1,5 @@
 # Module for interfacing with microphone.
 
-import webrtcvad
 import pyaudio
 import asyncio
 import websockets
