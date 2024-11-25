@@ -47,12 +47,15 @@ def format_emotions(emotions):
 
 # Generates text reponse using openAI API
 def generate_response(input_text, emotions):
+    system_prompt = 'You are a good friend that provides insightful and brief (maximum 12 words) responses.'
+    if emotions is not None:
+        system_prompt += " Emotions Detected: " + emotions
     response = client.chat.completions.create(
         model="llama3-8b-8192",
         messages=[
             {
                 "role": "system",
-                "content": "You are a good friend that provides insightful and brief (two to three sentences) responses. Emotions Detected: " + emotions
+                "content": system_prompt
             },
             {
                 "role": "user",

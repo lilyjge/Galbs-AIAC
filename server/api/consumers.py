@@ -35,6 +35,7 @@ class ApiConsumer(WebsocketConsumer):
 
         # Send input command to send input data to the server and initiate the output generation process
         elif cmd == 'send_input':
+            print("send_input received.")
             # Validate input data
             if 'image_data' not in request:
                 self.send(text_data=json.dumps({"message": "No image data provided."}))
@@ -46,10 +47,10 @@ class ApiConsumer(WebsocketConsumer):
             audio_data = base64.b64decode(request['audio_data'])
 
             # # Save image for testing
-            # jpg_og = image_data
-            # jpgnp = np.frombuffer(jpg_og, dtype=np.uint8)
-            # img = cv2.imdecode(jpgnp, flags=1)
-            # cv2.imwrite(f"./test10.jpg", img)
+            jpg_og = image_data
+            jpgnp = np.frombuffer(jpg_og, dtype=np.uint8)
+            img = cv2.imdecode(jpgnp, flags=1)
+            cv2.imwrite(f"./user_image.jpg", img)
 
             # Save audio to file for transcription
             CHUNK = 1440
@@ -74,7 +75,10 @@ class ApiConsumer(WebsocketConsumer):
             print("User audio text:", user_audio_text)
 
             # Generate response
-            response_text = generate_response(user_audio_text, format_emotions(detect_emotions(facial_analysis_results)))
+            if facial_analysis_results is None:
+                response_text = generate_response(user_audio_text, None)
+            else:
+                response_text = generate_response(user_audio_text, format_emotions(detect_emotions(facial_analysis_results)))
             print("Response text:", response_text)
 
             # Generate TTS audio file of response
@@ -114,7 +118,7 @@ class ApiConsumer(WebsocketConsumer):
             self.send(text_data=json.dumps({
                 "command": "send_output",
                 "audio_data": audio_output_data_base64,
-                "motor_data": motor_response_data,
+                "motor_data": 90,
                 "led_data": lights_response_data
             }))
 

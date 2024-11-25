@@ -1,4 +1,4 @@
-ANGLE_SCALE = 130 # change later so it matches actual motor values
+ANGLE_SCALE = 100 # change later so it matches actual motor values
 
 MOTOR = {
     "angry": 0,
