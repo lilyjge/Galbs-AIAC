@@ -17,7 +17,7 @@ class Speaker:
         self.stream = self.audio.open(format=format, channels=channels, rate=rate, output=True)
 
     async def play_audio(self, data):
-        await self.stream.write(data)
+        self.stream.write(data)
 
     async def run(self, websocket_uri):
         # Continously receives and outputs data from server by websocket.

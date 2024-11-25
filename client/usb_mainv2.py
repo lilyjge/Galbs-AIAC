@@ -10,6 +10,7 @@ import websockets
 import asyncio
 import json
 import base64
+from API_KEY import PVCOBRA_KEY
 
 from modules.camera import camera
 from modules.microphone import microphone
@@ -18,7 +19,7 @@ from modules.speaker import speaker
 async def take_input(queue, mic, cam):
     while True:
         frame = mic.stream.read(mic.chunk)
-        if mic.is_speech(frame, mic.rate):
+        if mic.is_speech(frame):
             audio_data = await mic.record_audio()
             image_data = cam.send_image()
             send_data = {
@@ -38,8 +39,7 @@ async def output_audio(websocket, spk):
         if load["command"] == "send_output":
             audio_output = load["audio_data"]
             decoded_audio = base64.b64decode(audio_output)
-            print(decoded_audio)
-            spk.play_audio(decoded_audio)
+            # await spk.play_audio(decoded_audio)
         elif load["command"] == "ping":
             await websocket.send("received ping")
 
@@ -53,7 +53,7 @@ async def send_to_server(queue, websocket):
 
 async def main(websocket_uri):
     cam = camera.Camera()
-    mic = microphone.Microphone()
+    mic = microphone.Microphone(PVCOBRA_KEY, rate=16000, chunk=256, threshhold=0.2, silence_until_stop=200)
     spk = speaker.Speaker()
     queue = asyncio.Queue()
     async with websockets.connect(websocket_uri) as websocket:
@@ -62,4 +62,5 @@ async def main(websocket_uri):
         output_task = asyncio.create_task(output_audio(websocket, spk))
         await asyncio.gather(input_task, send_task, output_task)
           
-asyncio.run(main("ws://172.20.10.4:8000/ws/api/"))
+# asyncio.run(main("ws://172.20.10.4:8000/ws/api/"))
+asyncio.run(main("ws://localhost:8765"))

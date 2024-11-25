@@ -5,17 +5,22 @@ import pyaudio
 import asyncio
 import websockets
 import base64
+import pvcobra
 
 class Microphone:
     # Microphone class.
 
-    def __init__(self, chunk=1440, format=pyaudio.paInt16, channels=1, rate=48000):
-        # Initializes the microphone with specifications.
+    def __init__(self, access_key, chunk=1440, format=pyaudio.paInt16, channels=1, rate=48000, threshhold=0.5, silence_until_stop=100):
+        """
+        Initializes the microphone with specifications.
 
-        # chunk: number of audio frames read in each processing cycle
-        # format: datatype of audio
-        # channels: number of audio channels 
-        # rate: number of audio frames per second
+        chunk: number of audio frames read in each processing cycle
+        format: datatype of audio
+        channels: number of audio channels 
+        rate: number of audio frames per second
+        threshhold: probability threshhold for detecting sound, increase for stricter, less sensitive, and decrease for more sensitive
+        silence_until_stop: number of silent frames before recording is stopped, adjust accordingly to frame rate 
+        """
 
         self.chunk = chunk
         self.format = format
@@ -27,19 +32,26 @@ class Microphone:
 
         self.queue = asyncio.Queue()
 
-        self.vad = webrtcvad.Vad()
-        self.vad.set_mode(3)
+        # self.vad = webrtcvad.Vad()
+        # self.vad.set_mode(3)
+        
+        self.vad = pvcobra.create(access_key)
+        self.threshhold = threshhold
+        self.silence_until_stop = silence_until_stop
 
         self.frames = []
         self.recording = False
         self.silence = 0
 
-    def is_speech(self, frame, sample_rate):
+    def is_speech(self, frame):
         # Detects if there is sound in chunk of audio.
         # frame: chunk of audio
         # sample_rate: number of audio frames per second
         # Returns True if there is sound and False if it is silent.
-        return self.vad.is_speech(frame, sample_rate)
+        voice_probability = self.vad.process(frame)
+        # return self.vad.is_speech(frame, sample_rate)
+        print(voice_probability > self.threshhold)
+        return voice_probability > self.threshhold
     
     def send_audio(self):
         f = b''.join(self.frames)
@@ -54,7 +66,7 @@ class Microphone:
         # print("listening")
         while True:
             frame = self.stream.read(self.chunk)
-            if self.is_speech(frame, self.rate):
+            if self.is_speech(frame):
                 self.silence = 0
                 if not self.recording:
                     print("started")
@@ -62,10 +74,10 @@ class Microphone:
                 self.frames.append(frame)
             else:
                 self.silence += 1
-                if self.recording and self.silence > 100:
+                if self.recording and self.silence > self.silence_until_stop:
                     print("no more recording")
                     return self.send_audio()
-                elif self.recording and self.silence < 50:
+                elif self.recording and self.silence < self.silence_until_stop:
                     self.frames.append(frame)
 
     async def direct_send(self, websocket):
@@ -93,3 +105,4 @@ class Microphone:
         self.stream.stop_stream()
         self.stream.close()
         self.audio.terminate()
+        self.vad.delete()

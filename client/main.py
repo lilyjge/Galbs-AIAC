@@ -16,9 +16,10 @@ from modules.stepper_motor import stepper_motor
 from modules.stepper_motor import simultaneous
 from modules.rgb_led import rgb_led
 from modules.rgb_led import color
+from API_KEY import PVCOBRA_KEY
 
 cam = camera.Camera()
-mic = microphone.Microphone()
+mic = microphone.Microphone(PVCOBRA_KEY, rate=16000, chunk=256, threshhold=0.2, silence_until_stop=200)
 spk = speaker.Speaker()
 stepper_motor_left = stepper_motor.StepperMotor((18, 23, 24, 25), True)
 stepper_motor_right = stepper_motor.StepperMotor((12, 16, 20, 21), False)
@@ -31,7 +32,7 @@ async def take_input(queue: asyncio.Queue) -> None:
     """
     while True:
         frame = mic.stream.read(mic.chunk)
-        if mic.is_speech(frame, mic.rate):
+        if mic.is_speech(frame):
             audio_data = await mic.record_audio()
             image_data = cam.send_image()
             send_data = {
