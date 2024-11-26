@@ -28,11 +28,6 @@ class Microphone:
 
         self.audio = pyaudio.PyAudio()
         self.stream = self.audio.open(format=format, channels=channels, rate=rate, input=True, frames_per_buffer=chunk)
-
-        self.queue = asyncio.Queue()
-
-        # self.vad = webrtcvad.Vad()
-        # self.vad.set_mode(3)
         
         self.vad = pvcobra.create(access_key)
         self.threshhold = threshhold
@@ -43,16 +38,20 @@ class Microphone:
         self.silence = 0
 
     def is_speech(self, frame):
-        # Detects if there is sound in chunk of audio.
-        # frame: chunk of audio
-        # sample_rate: number of audio frames per second
-        # Returns True if there is sound and False if it is silent.
+        """
+        Detects if there is sound in chunk of audio.
+
+        frame: chunk of audio
+        Returns True if there is sound and False if it is silent.
+        """
         voice_probability = self.vad.process(frame)
-        # return self.vad.is_speech(frame, sample_rate)
         print(voice_probability > self.threshhold)
         return voice_probability > self.threshhold
     
     def send_audio(self):
+        """
+        Encodes audio with base64, resets recording variables, and returns encoded audio data.
+        """
         f = b''.join(self.frames)
         encoded = base64.b64encode(f).decode()
         self.frames = []
@@ -61,8 +60,9 @@ class Microphone:
         return encoded
     
     async def record_audio(self):
-        # Processes audio input and places audio chunks with sound into queue to be sent.
-        # print("listening")
+        """
+        Records audio to be sent until silence for period of time.
+        """
         while True:
             frame = self.stream.read(self.chunk)
             if self.is_speech(frame):
@@ -78,29 +78,11 @@ class Microphone:
                     return self.send_audio()
                 elif self.recording and self.silence < self.silence_until_stop:
                     self.frames.append(frame)
-
-    async def direct_send(self, websocket):
-        # Sends recorded audio chunks by websocket. 
-        # websocket: websocket to send audio through
-        while True:
-            print("getting frame")
-            frames = await self.queue.get()
-            print("sending...")
-            frame = b''.join(frames)
-            await websocket.send(frame)
-            self.queue.task_done()
-            print("sent!")
-
-    async def run(self, websocket_uri):
-        # Records and sends audio asynchronously. 
-        # websocket_uri: the uri of the websocket to connect with and send audio to
-        async with websockets.connect(websocket_uri) as websocket:
-            listener_task = asyncio.create_task(self.record_audio())
-            sender_task = asyncio.create_task(self.send_audio(websocket))
-            await asyncio.gather(listener_task, sender_task)
     
     def close(self):
-        # Closes audio stream. 
+        """
+        Closes audio stream. 
+        """
         self.stream.stop_stream()
         self.stream.close()
         self.audio.terminate()
