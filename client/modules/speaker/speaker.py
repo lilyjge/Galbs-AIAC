@@ -18,6 +18,7 @@ class Speaker:
 
     async def play_audio(self, data):
         self.stream.write(data)
+        print("DONE SPEAKING")
 
     async def run(self, websocket_uri):
         # Continously receives and outputs data from server by websocket.

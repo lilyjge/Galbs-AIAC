@@ -3,23 +3,20 @@ Testing script for stepper motors.
 """
 
 from modules.stepper_motor import stepper_motor
+from modules.stepper_motor import simultaneous
 
 
 def main() -> int:
     """
     Main, will switch to pytest soon.
     """
-    angle = 130
+    angle = 0
 
-    stepper_motor1 = stepper_motor.StepperMotor((18, 23, 24, 25), True)
-    stepper_motor2 = stepper_motor.StepperMotor((12, 16, 20, 21), False)
+    stepper_motor_left = stepper_motor.StepperMotor((18, 23, 24, 25), True)
+    stepper_motor_right = stepper_motor.StepperMotor((12, 16, 20, 21), False)
 
-    stepper_motor1.set_position(angle, 620)
-    stepper_motor2.set_position(angle, 620)
-
-    stepper_motor1.set_position(0, 310)
-    stepper_motor2.set_position(0, 310)
-
+    simultaneous.set_position(angle, stepper_motor_left, stepper_motor_right)
+    
     return 0
 
 
