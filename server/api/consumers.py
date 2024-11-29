@@ -53,10 +53,10 @@ class ApiConsumer(WebsocketConsumer):
             cv2.imwrite(f"./user_image.jpg", img)
 
             # Save audio to file for transcription
-            CHUNK = 1440
+            CHUNK = 256
             FORMAT = pyaudio.paInt16
             CHANNELS = 1 
-            RATE = 48000
+            RATE = 16000
             wf = wave.open("./user_audio.wav", "wb")
             wf.setnchannels(CHANNELS)
             p = pyaudio.PyAudio()
