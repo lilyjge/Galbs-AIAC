@@ -45,7 +45,7 @@ class Microphone:
         Returns True if there is sound and False if it is silent.
         """
         voice_probability = self.vad.process(frame)
-        print(voice_probability > self.threshhold)
+        # print(voice_probability > self.threshhold)
         return voice_probability > self.threshhold
     
     def send_audio(self):
@@ -73,6 +73,7 @@ class Microphone:
                 self.frames.append(frame)
             else:
                 self.silence += 1
+                # print(f"silent frames {self.silence}")
                 if self.recording and self.silence > self.silence_until_stop:
                     print("no more recording")
                     return self.send_audio()

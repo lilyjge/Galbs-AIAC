@@ -19,7 +19,7 @@ from modules.rgb_led import color
 from API_KEY import PVCOBRA_KEY
 
 cam = camera.Camera()
-mic = microphone.Microphone(PVCOBRA_KEY, rate=16000, chunk=256, threshhold=0.025, silence_until_stop=200)
+mic = microphone.Microphone(PVCOBRA_KEY, rate=16000, chunk=256, threshhold=0.04, silence_until_stop=100)
 spk = speaker.Speaker()
 stepper_motor_left = stepper_motor.StepperMotor((18, 23, 24, 25), True)
 stepper_motor_right = stepper_motor.StepperMotor((12, 16, 20, 21), False)
@@ -31,9 +31,11 @@ async def process(websocket: websockets.WebSocketClientProtocol) -> None:
     Capture audio and image data when speech is detected and put it into the queue.
     """
     while True:
+        mic = microphone.Microphone(PVCOBRA_KEY, rate=16000, chunk=256, threshhold=0.04, silence_until_stop=100)
         frame = mic.stream.read(mic.chunk)
         if mic.is_speech(frame):
             audio_data = await mic.record_audio()
+            mic.close()
             image_data = cam.send_image()
             send_data = {
                 "command": "send_input",
