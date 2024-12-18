@@ -45,7 +45,9 @@ class StepperMotor:
         min_angle: The lower limit for the range of motion.
         max_angle: The upper limit for the range of motion.
         """
-        self.__angle_file_path = pathlib.Path("modules/stepper_motor", f"{'left' if left else 'right'}_angle.txt")
+        self.__angle_file_path = pathlib.Path(
+            "modules/stepper_motor", f"{'left' if left else 'right'}_angle.txt"
+        )
 
         self.__motor_pins = [gpiozero.OutputDevice(pin) for pin in motor_pins]
 
@@ -84,12 +86,16 @@ class StepperMotor:
         return self.__step_delay
 
     def set_current_angle(self, angle: int) -> bool:
+        """
+        Sets current angle property.
+
+        Returns: success.
+        """
         self.__current_angle = angle
-        # ERROR HANDLING!!!!
         self.write_angle_to_file(angle)
+
         return True
 
-    # NEED BETTER RETURN AND STUFF HERE
     def read_angle_from_file(self) -> int:
         """
         Reads the current angle from a file.
@@ -145,6 +151,14 @@ class StepperMotor:
         return True
 
     def move_step(self, step_number: int, direction: int) -> int:
+        """
+        Moves motor one step in a specific direction.
+
+        step_number: The current step number.
+        direction: The direction of rotation.
+
+        Returns: New step number.
+        """
         step_number = (step_number + direction) % ROTOR_STEPS_PER_REVOLUTION
         sequence = self.__step_sequence[step_number % len(self.__step_sequence)]
         for pin, state in zip(self.__motor_pins, sequence):

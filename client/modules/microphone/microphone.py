@@ -1,24 +1,37 @@
-# Module for interfacing with microphone.
+"""
+Module for interfacing with microphone.
+"""
+
+import base64
 
 import pyaudio
-import asyncio
-import websockets
-import base64
 import pvcobra
 
-class Microphone:
-    # Microphone class.
 
-    def __init__(self, access_key, chunk=1440, format=pyaudio.paInt16, channels=1, rate=48000, threshhold=0.5, silence_until_stop=100):
+class Microphone:
+    """
+    Microphone class.
+    """
+
+    def __init__(
+        self,
+        access_key: str,
+        chunk: int = 1440,
+        format: int = pyaudio.paInt16,
+        channels: int = 1,
+        rate: int = 48000,
+        threshold: float = 0.5,
+        silence_until_stop: int = 100,
+    ) -> None:
         """
         Initializes the microphone with specifications.
 
         chunk: number of audio frames read in each processing cycle
         format: datatype of audio
-        channels: number of audio channels 
+        channels: number of audio channels
         rate: number of audio frames per second
-        threshhold: probability threshhold for detecting sound, increase for stricter, less sensitive, and decrease for more sensitive
-        silence_until_stop: number of silent frames before recording is stopped, adjust accordingly to frame rate 
+        threshold: probability threshold for detecting sound, increase for stricter, less sensitive, and decrease for more sensitive
+        silence_until_stop: number of silent frames before recording is stopped, adjust accordingly to frame rate
         """
 
         self.chunk = chunk
@@ -27,17 +40,19 @@ class Microphone:
         self.rate = rate
 
         self.audio = pyaudio.PyAudio()
-        self.stream = self.audio.open(format=format, channels=channels, rate=rate, input=True, frames_per_buffer=chunk)
-        
+        self.stream = self.audio.open(
+            format=format, channels=channels, rate=rate, input=True, frames_per_buffer=chunk
+        )
+
         self.vad = pvcobra.create(access_key)
-        self.threshhold = threshhold
+        self.threshold = threshold
         self.silence_until_stop = silence_until_stop
 
         self.frames = []
         self.recording = False
         self.silence = 0
 
-    def is_speech(self, frame):
+    def is_speech(self, frame: bytes) -> bool:
         """
         Detects if there is sound in chunk of audio.
 
@@ -45,21 +60,20 @@ class Microphone:
         Returns True if there is sound and False if it is silent.
         """
         voice_probability = self.vad.process(frame)
-        # print(voice_probability > self.threshhold)
-        return voice_probability > self.threshhold
-    
-    def send_audio(self):
+        return voice_probability > self.threshold
+
+    def send_audio(self) -> str:
         """
         Encodes audio with base64, resets recording variables, and returns encoded audio data.
         """
-        f = b''.join(self.frames)
+        f = b"".join(self.frames)
         encoded = base64.b64encode(f).decode()
         self.frames = []
         self.recording = False
         self.silence = 0
         return encoded
-    
-    async def record_audio(self):
+
+    async def record_audio(self) -> str:
         """
         Records audio to be sent until silence for period of time.
         """
@@ -73,16 +87,15 @@ class Microphone:
                 self.frames.append(frame)
             else:
                 self.silence += 1
-                # print(f"silent frames {self.silence}")
                 if self.recording and self.silence > self.silence_until_stop:
                     print("no more recording")
                     return self.send_audio()
-                elif self.recording and self.silence < self.silence_until_stop:
+                if self.recording and self.silence < self.silence_until_stop:
                     self.frames.append(frame)
-    
-    def close(self):
+
+    def close(self) -> None:
         """
-        Closes audio stream. 
+        Closes audio stream.
         """
         self.stream.stop_stream()
         self.stream.close()

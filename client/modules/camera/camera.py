@@ -1,27 +1,33 @@
-# Module for interfacing with camera.
+"""
+Module for interfacing with camera.
+"""
 
-import cv2
 import base64
 
-class Camera:
-    # Camera class.
+import cv2
 
-    def __init__(self, cam_port=0):
+
+class Camera:
+    """
+    Camera class.
+    """
+
+    def __init__(self, cam_port: int = 0) -> None:
         """
         Initializes the camera with specifications.
 
-        cam_port: port of the camera
+        cam_port: Camera port.
         """
 
         self.cam_port = cam_port
         self.cam = cv2.VideoCapture(self.cam_port)
 
-    def send_image(self):
+    def send_image(self) -> str:
         """
         Takes image and return base64 encoded data of image.
         """
-        result, image = self.cam.read()
-        result, buffer = cv2.imencode('.jpg', image)
+        _, image = self.cam.read()
+        _, buffer = cv2.imencode(".jpg", image)
         s = base64.b64encode(buffer).decode()
         print("sending image")
         return s

@@ -6,7 +6,7 @@ import time
 
 import gpiozero
 
-from . import color
+from modules.rgb_led import color
 
 
 PWM_REDUCTION = 255
