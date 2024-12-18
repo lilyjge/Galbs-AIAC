@@ -5,3 +5,27 @@ I just received the best news! I'm going to be promoted at work, and I can't wai
 emotions_input = {'emotion': {'happy': np.float32(6.2788945e-06), 'disgust': np.float32(1.12710405e-13), 'fear': np.float32(8.1948154e-10), 'angry': np.float32(99.39528), 'sad': np.float32(1.3383974e-06), 'surprise': np.float32(0.00043022225), 'neutral': np.float32(0.60428834)}, 'dominant_emotion': 'angry', 'region': {'x': 1, 'y': 1, 'w': 114, 'h': 114, 'left_eye': None, 'right_eye': None}, 'face_confidence': np.float64(0.94)}
 I can't believe my colleague took credit for my work. It's so frustrating and unfair! I’m really angry about this situation.
 
+
+emotions_input = {'emotion': {'angry': np.float32(6.2788945e-06), 'happy': np.float32(1.12710405e-13), 'fear': np.float32(8.1948154e-10), 'disgust': np.float32(99.39528), 'sad': np.float32(1.3383974e-06), 'surprise': np.float32(0.00043022225), 'neutral': np.float32(0.60428834)}, 'dominant_emotion': 'disgust', 'region': {'x': 1, 'y': 1, 'w': 114, 'h': 114, 'left_eye': None, 'right_eye': None}, 'face_confidence': np.float64(0.94)}
+Ugh, I can't believe what just happened! That was so disgusting and disrespectful. I don’t even know how to process it. Honestly, it’s just revolting, and I’m completely disgusted by it.
+
+
+emotions_input = {'emotion': {'angry': np.float32(6.2788945e-06), 'disgust': np.float32(1.12710405e-13), 'happy': np.float32(8.1948154e-10), 'fear': np.float32(99.39528), 'sad': np.float32(1.3383974e-06), 'surprise': np.float32(0.00043022225), 'neutral': np.float32(0.60428834)}, 'dominant_emotion': 'fear', 'region': {'x': 1, 'y': 1, 'w': 114, 'h': 114, 'left_eye': None, 'right_eye': None}, 'face_confidence': np.float64(0.94)}
+I'm feeling so anxious right now! I don't know what to expect, and it's making me really scared. Everything seems uncertain, and I can't stop worrying about what might happen next.
+
+
+emotions_input = {'emotion': {'angry': np.float32(6.2788945e-06), 'disgust': np.float32(1.12710405e-13), 'fear': np.float32(8.1948154e-10), 'sad': np.float32(99.39528), 'happy': np.float32(1.3383974e-06), 'surprise': np.float32(0.00043022225), 'neutral': np.float32(0.60428834)}, 'dominant_emotion': 'sad', 'region': {'x': 1, 'y': 1, 'w': 114, 'h': 114, 'left_eye': None, 'right_eye': None}, 'face_confidence': np.float64(0.94)}
+I just can't shake this overwhelming sadness. Everything feels so heavy, and I’m struggling to find any joy in what’s going on around me. It’s like this deep, constant weight that I can’t seem to get rid of.
+
+
+emotions_input = {'emotion': {'angry': np.float32(6.2788945e-06), 'disgust': np.float32(1.12710405e-13), 'fear': np.float32(8.1948154e-10), 'surprise': np.float32(99.39528), 'sad': np.float32(1.3383974e-06), 'happy': np.float32(0.00043022225), 'neutral': np.float32(0.60428834)}, 'dominant_emotion': 'surprise', 'region': {'x': 1, 'y': 1, 'w': 114, 'h': 114, 'left_eye': None, 'right_eye': None}, 'face_confidence': np.float64(0.94)}
+I can't believe what just happened! This is so unexpected and unbelievable. I'm completely caught off guard and don't even know how to react—everything just feels so surprising right now!
+
+
+emotions_input = {'emotion': {'angry': np.float32(6.2788945e-06), 'disgust': np.float32(1.12710405e-13), 'fear': np.float32(8.1948154e-10), 'neutral': np.float32(99.39528), 'sad': np.float32(1.3383974e-06), 'surprise': np.float32(0.00043022225), 'happy': np.float32(0.60428834)}, 'dominant_emotion': 'neutral', 'region': {'x': 1, 'y': 1, 'w': 114, 'h': 114, 'left_eye': None, 'right_eye': None}, 'face_confidence': np.float64(0.94)}
+I’m just going through the motions, not really feeling anything strongly right now.
+
+
+emotions_input = None
+我简直不敢相信今天过得如此精彩！一切都进展顺利，我对接下来的事情感到非常兴奋！
+
