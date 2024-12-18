@@ -2,7 +2,9 @@
 
 ## About
 
-TODO.
+This project utilizes Llama 3 of Meta Platforms, Inc.; in particular, "Llama 3 is licensed under the LLAMA 3 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved."
+
+Link: [https://www.llama.com/license/](https://www.llama.com/license/)
 
 ## Installation
 

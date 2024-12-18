@@ -2,7 +2,6 @@
 A script that takes text input (parsed from audio input) and emotions dictionary (parsed from facial input) to generate audio output, motor angle for arm response, and LED light response as RGB.
 '''
 
-from random import randint
 import numpy as np
 from groq import Groq
 from output_generation.API_KEY import GROQ_API_KEY, ELEVENLABS_API_KEY
@@ -21,14 +20,17 @@ headers = {
 VOICE_ID = "9BWtsMINqrJLrRacOk9x"
 VALID_EMOTION_LEVEL = 0.5
 
-# TO BE COMPLETED DURING INTEGRATION
+
 # Obtains user audio input text data from audio-recognition
 def detect_audio(text):
     return text
 
-# TO BE COMPLETED DURING INTEGRATION
+
 # Obtains user facial emotions data from facial-recognition
 def detect_emotions(emotions):
+    if emotions == None:
+        return None
+
     valid_emotions = {}
     for emotion in emotions['emotion']:
         if emotions['emotion'][emotion] > VALID_EMOTION_LEVEL:
@@ -39,6 +41,9 @@ def detect_emotions(emotions):
 
 # Formats emotions
 def format_emotions(emotions):
+    if emotions == None:
+        return None
+    
     emotions_text = ""
     for emotion in emotions:
         emotions_text += (emotion + " at " + str(emotions[emotion]) + ", ")
@@ -81,7 +86,7 @@ def tts(voice_id, text, output_file):
 
     response = requests.post(f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream", headers=headers, json=data, stream=True)
 
-    with open(f"output_generation/audio-output-files/{output_file}", "wb") as file:
+    with open(f"output_generation/audio_output_files/{output_file}", "wb") as file:
         for chunk in response.iter_content(chunk_size=1024):
             file.write(chunk)
 
@@ -99,7 +104,8 @@ def lights_response(emotions):
         return COLOUR["neutral"]
     return COLOUR[emotions["dominant_emotion"]]
 
-# TESTING
+
+# Testing
 if __name__ == "__main__":
     # Input
     print("TEXT: ")
