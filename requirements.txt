@@ -10,4 +10,6 @@ pyaudio
 openai
 groq
 requests
-soundfile
+torch
+transformers
+librosa

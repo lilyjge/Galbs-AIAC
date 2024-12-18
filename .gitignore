@@ -1,3 +1,13 @@
 venv/
+__pycache__
 .DS_Store
 API_KEY.py
+.idea
+image_base64_output.txt
+output.mp3
+.idea
+image_base64_output.txt
+output.mp3
+user_audio.wav
+user_image.jpg
+output.wav
