@@ -1,7 +1,11 @@
 # For now we use hugging face, we may extend this to use a different library in the future
 
 import torch
-from transformers import Wav2Vec2Processor, Wav2Vec2FeatureExtractor, Wav2Vec2ForSequenceClassification
+from transformers import (
+    Wav2Vec2Processor,
+    Wav2Vec2FeatureExtractor,
+    Wav2Vec2ForSequenceClassification,
+)
 
 
 import librosa
@@ -23,8 +27,8 @@ class AudioEmotionRecognize:
     def __init__(self, wav, wav_file):
         self.wav = wav
         self.wav_file = wav_file
-        self.recognizer_inputs = processed(wav_file) # inputs for hugging face model to use
-    
+        self.recognizer_inputs = processed(wav_file)  # inputs for hugging face model to use
+
     # for now we use filepath, we may change in the future
 
     """
@@ -41,6 +45,4 @@ class AudioEmotionRecognize:
         # Interpret the result
         labels = model.config.id2label
         emotion = labels[predicted_class_id]
-        return emotion                
-        
-        
+        return emotion
