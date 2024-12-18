@@ -26,5 +26,5 @@ with wave.open(file_path) as wf:
     spk.play_audio(decoded_audio)
 
 
-# filename = "./client/output.wav"
-# wf = wave.open(filename, 'rb')
+filename = "./client/output.wav"
+wf = wave.open(filename, 'rb')
