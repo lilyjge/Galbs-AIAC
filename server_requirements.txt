@@ -1,0 +1,20 @@
+channels
+daphne
+deepface
+django
+groq
+librosa
+opencv-python
+openai
+pvcobra
+pyaudio
+requests
+tf_keras
+torch
+transformers
+websockets
+
+# Linters and formatters
+black==24.10.0
+flake8-annotations==3.1.1
+pylint==3.3.2
