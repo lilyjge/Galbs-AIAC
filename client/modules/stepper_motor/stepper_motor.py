@@ -2,6 +2,7 @@
 Module for interfacing with stepper motors.
 """
 
+import pathlib
 import time
 
 import gpiozero
@@ -44,6 +45,8 @@ class StepperMotor:
         min_angle: The lower limit for the range of motion.
         max_angle: The upper limit for the range of motion.
         """
+        self.__angle_file_path = pathlib.Path("modules/stepper_motor", f"{'left' if left else 'right'}_angle.txt")
+
         self.__motor_pins = [gpiozero.OutputDevice(pin) for pin in motor_pins]
 
         self.__step_sequence = STEP_SEQUENCE_LEFT if left else STEP_SEQUENCE_RIGHT
@@ -51,9 +54,69 @@ class StepperMotor:
 
         self.__min_angle = min_angle
         self.__max_angle = max_angle
-        self.__current_angle = 110
+        self.__current_angle = self.read_angle_from_file()
 
-    def __set_step_delay(self, rotations_per_minute: int) -> bool:
+    @property
+    def angle_limits(self) -> "tuple[int, int]":
+        """
+        Gets the angle limits of the motor.
+
+        Returns: min angle, max angle.
+        """
+        return self.__min_angle, self.__max_angle
+
+    @property
+    def current_angle(self) -> int:
+        """
+        Gets the current limits of the motor.
+
+        Returns: current angle.
+        """
+        return self.__current_angle
+
+    @property
+    def step_delay(self) -> int:
+        """
+        Gets the step delay of the motor.
+
+        Returns: step delay.
+        """
+        return self.__step_delay
+
+    def set_current_angle(self, angle: int) -> bool:
+        self.__current_angle = angle
+        # ERROR HANDLING!!!!
+        self.write_angle_to_file(angle)
+        return True
+
+    # NEED BETTER RETURN AND STUFF HERE
+    def read_angle_from_file(self) -> int:
+        """
+        Reads the current angle from a file.
+
+        Returns: The current angle.
+        """
+        try:
+            with open(self.__angle_file_path, "r") as file:
+                angle = int(file.read().strip())
+                return angle
+        except Exception as e:
+            print(f"ERROR: Failed to read angle from file: {e}")
+            return 0
+
+    def write_angle_to_file(self, angle: int) -> None:
+        """
+        Writes the current angle to a file.
+
+        angle: The current angle to write.
+        """
+        try:
+            with open(self.__angle_file_path, "w") as file:
+                file.write(str(angle))
+        except Exception as e:
+            print(f"ERROR: Failed to write angle to file: {e}")
+
+    def set_step_delay(self, rotations_per_minute: int) -> bool:
         """
         Sets the delay between steps.
 
@@ -80,6 +143,16 @@ class StepperMotor:
             return False
 
         return True
+
+    def move_step(self, step_number: int, direction: int) -> int:
+        step_number = (step_number + direction) % ROTOR_STEPS_PER_REVOLUTION
+        sequence = self.__step_sequence[step_number % len(self.__step_sequence)]
+        for pin, state in zip(self.__motor_pins, sequence):
+            if state:
+                pin.on()
+            else:
+                pin.off()
+        return step_number
 
     def __move_steps(self, number_of_steps: int, direction: int) -> bool:
         """
@@ -129,7 +202,7 @@ class StepperMotor:
 
         Returns: Success.
         """
-        result = self.__set_step_delay(rotations_per_minute)
+        result = self.set_step_delay(rotations_per_minute)
         if not result:
             print(f"ERROR: Failed to set rotations per minute: {rotations_per_minute}")
             return False

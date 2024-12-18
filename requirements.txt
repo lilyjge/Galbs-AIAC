@@ -5,7 +5,7 @@ django
 channels
 daphne
 websockets
-webrtcvad
+pvcobra
 pyaudio
 openai
 groq
