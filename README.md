@@ -5,6 +5,7 @@
 The Artificially Intelligent and Automated Companion, Galbs, is a functional companion capable of engaging in conversation and providing high-availability emotional support to a wide audience of users. Using a camera, microphone, and speaker, Galbs is capable of analyzing and interpreting visual and auditory data highly effectively–generating appropriate responses using modern machine learning technologies. Additionally, Galbs can detect a person's presence and accurately determine their mood to advise responses. The companion is equipped with adaptable and customizable personalities, to suit the needs of each individual user. Galbs incorporates small gestures into its speech, bringing more life to the companion.
 
 Read more about the project in our [report](https://docs.google.com/document/d/1PVMq5yzujTvwzG0pw4Gjc-sdwjeTVPDN7BOnSVzINY8/edit?usp=sharing).
+See our project in action in our [demo](https://drive.google.com/file/d/1_smf41COKXpF0fLe77Z30jG9UaaqqBlF/view?usp=sharing).
 
 This project utilizes Llama 3 of Meta Platforms, Inc.; in particular, "Llama 3 is licensed under the LLAMA 3 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved."
 
